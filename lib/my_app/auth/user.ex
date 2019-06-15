@@ -16,6 +16,8 @@ defmodule MyApp.Auth.User do
     user
     |> cast(attrs, [:email, :is_active, :password])
     |> validate_required([:email, :is_active, :password])
+    |> validate_format(:email, ~r/@/)
+    |> validate_length(:password, min: 8)
     |> unique_constraint(:email)
     |> put_password_hash()
   end

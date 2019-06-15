@@ -6,8 +6,8 @@ defmodule MyApp.AuthTest do
   describe "users" do
     alias MyApp.Auth.User
 
-    @valid_attrs %{email: "some email", is_active: true, password: "some password"}
-    @update_attrs %{email: "some updated email", is_active: false, password: "new password"}
+    @valid_attrs %{email: "a@email.com", is_active: true, password: "some password"}
+    @update_attrs %{email: "new@email.com", is_active: false, password: "new password"}
     @invalid_attrs %{email: nil, is_active: nil, password: nil}
 
     def user_fixture(attrs \\ %{}) do
@@ -31,7 +31,7 @@ defmodule MyApp.AuthTest do
 
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Auth.create_user(@valid_attrs)
-      assert user.email == "some email"
+      assert user.email == "a@email.com"
       assert user.is_active == true
       assert Bcrypt.verify_pass("some password", user.password_hash)
     end
@@ -43,7 +43,7 @@ defmodule MyApp.AuthTest do
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
       assert {:ok, %User{} = user} = Auth.update_user(user, @update_attrs)
-      assert user.email == "some updated email"
+      assert user.email == "new@email.com"
       assert user.is_active == false
       assert Bcrypt.verify_pass("new password", user.password_hash)
     end

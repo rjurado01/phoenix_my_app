@@ -5,12 +5,12 @@ defmodule MyAppWeb.UserControllerTest do
   alias MyApp.Auth.User
 
   @create_attrs %{
-    email: "some email",
+    email: "a@email.com",
     is_active: true,
     password: "some password"
   }
   @update_attrs %{
-    email: "some updated email",
+    email: "new@email.com",
     is_active: false,
     password: "some updated password"
   }
@@ -41,7 +41,7 @@ defmodule MyAppWeb.UserControllerTest do
 
       assert %{
                "id" => id,
-               "email" => "some email",
+               "email" => "a@email.com",
                "is_active" => true,
              } = json_response(conn, 200)["data"]
     end
@@ -63,7 +63,7 @@ defmodule MyAppWeb.UserControllerTest do
 
       assert %{
                "id" => id,
-               "email" => "some updated email",
+               "email" => "new@email.com",
                "is_active" => false,
              } = json_response(conn, 200)["data"]
     end
