@@ -3,6 +3,7 @@ defmodule MyAppWeb.UserController do
 
   alias MyApp.Auth
   alias MyApp.Auth.User
+  alias MyApp.Guardian
 
   action_fallback MyAppWeb.FallbackController
 
@@ -42,13 +43,13 @@ defmodule MyAppWeb.UserController do
   end
 
   def sign_in(conn, %{"email" => email, "password" => password}) do
-    case MyApp.Auth.authenticate_user(email, password) do
-      {:ok, user} ->
+    with {:ok, user} <- MyApp.Auth.authenticate_user(email, password),
+         {:ok, token, _claims} <- MyApp.Guardian.encode_and_sign(user) do
         conn
         |> put_status(:ok)
         |> put_view(MyAppWeb.UserView)
-        |> render("sign_in.json", user: user)
-
+        |> render("jwt.json", jwt: token)
+    else
       {:error, message} ->
         conn
         |> put_status(:unauthorized)

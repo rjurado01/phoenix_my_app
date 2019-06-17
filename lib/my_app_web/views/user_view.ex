@@ -16,6 +16,14 @@ defmodule MyAppWeb.UserView do
       is_active: user.is_active}
   end
 
+  def render("jwt.json", %{jwt: jwt}) do
+    %{
+      data: %{
+        jwt: jwt
+      }
+    }
+  end
+
   def render("sign_in.json", %{user: user}) do
     %{
       data: %{
