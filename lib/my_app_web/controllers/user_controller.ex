@@ -3,7 +3,7 @@ defmodule MyAppWeb.UserController do
 
   alias MyApp.Auth
   alias MyApp.Auth.User
-  alias MyApp.Guardian
+  alias MyAppWeb.Guardian
 
   action_fallback MyAppWeb.FallbackController
 
@@ -19,6 +19,11 @@ defmodule MyAppWeb.UserController do
       |> put_resp_header("location", Routes.user_path(conn, :show, user))
       |> render("show.json", user: user)
     end
+  end
+
+  def show(conn, _params) do
+    user = Guardian.Plug.current_resource(conn)
+    render(conn, "show.json", user: user)
   end
 
   def show(conn, %{"id" => id}) do
@@ -43,8 +48,8 @@ defmodule MyAppWeb.UserController do
   end
 
   def sign_in(conn, %{"email" => email, "password" => password}) do
-    with {:ok, user} <- MyApp.Auth.authenticate_user(email, password),
-         {:ok, token, _claims} <- MyApp.Guardian.encode_and_sign(user) do
+    with {:ok, user} <- Auth.authenticate_user(email, password),
+         {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
         conn
         |> put_status(:ok)
         |> put_view(MyAppWeb.UserView)

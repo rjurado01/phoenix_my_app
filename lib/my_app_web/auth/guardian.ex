@@ -1,4 +1,4 @@
-defmodule MyApp.Guardian do
+defmodule MyAppWeb.Guardian do
   use Guardian, otp_app: :my_app
 
   def subject_for_token(user, _claims) do
@@ -12,7 +12,7 @@ defmodule MyApp.Guardian do
 
   def resource_from_claims(claims) do
     id = claims["sub"]
-    resource = MyApp.Accounts.get_user!(id)
+    resource = MyApp.Auth.get_user!(id)
     {:ok,  resource}
   end
 

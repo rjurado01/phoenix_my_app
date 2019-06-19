@@ -26,7 +26,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 # Guardian config
-config :my_app, MyApp.Guardian,
+config :my_app, MyAppWeb.Guardian,
   issuer: "myApp",
   secret_key: "7O67/ngimtUReRqq9J9E1iitobPYnfKtW4J713FFKUupunA3Yw52vhBmj488upFF"
 
