@@ -119,4 +119,21 @@ defmodule MyApp.Auth do
       {:error, "Wrong email or password"}
     end
   end
+
+  def generate_auth_token(user) do
+    new_token = :crypto.strong_rand_bytes(24) |> Base.encode64 |> binary_part(0, 24)
+    auth_tokens = user.auth_tokens || [] ++ [new_token] |> Enum.take(-5)
+
+    user
+    |> Ecto.Changeset.change(auth_tokens: auth_tokens)
+    |> MyApp.Repo.update
+
+    new_token
+  end
+
+  def get_user_by_token(token) do
+    Ecto.Query.from(u in User, where: ^token in u.auth_tokens)
+    |> Repo.all
+    |> List.first
+  end
 end

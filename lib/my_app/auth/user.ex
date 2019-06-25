@@ -7,6 +7,7 @@ defmodule MyApp.Auth.User do
     field :is_active, :boolean, default: false
     field :password, :string, virtual: true
     field :password_hash, :string
+    field :auth_tokens, {:array, :string}
 
     timestamps()
   end

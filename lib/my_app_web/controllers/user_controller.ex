@@ -62,4 +62,14 @@ defmodule MyAppWeb.UserController do
         |> render("401.json", message: message)
     end
   end
+
+  def sign_out(conn) do
+    claims = Guardian.Plug.current_claims(conn)
+    user = Guardian.Plug.current_resource(conn)
+    token = claims['sub']
+
+    #Auth.remove_session(user, token)
+
+    conn |> put_status(:ok)
+  end
 end
