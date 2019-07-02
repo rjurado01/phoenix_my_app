@@ -19,7 +19,7 @@ defmodule MyApp.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {MyApp.Application, []},
+      mod: {App.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -43,7 +43,9 @@ defmodule MyApp.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:bcrypt_elixir, "~> 1.0"},
       {:corsica, "~> 1.0"},
-      {:guardian, "~> 1.0"}
+      {:guardian, "~> 1.0"},
+      {:ex_machina, "~> 2.3", only: :test},
+      {:poison, "~> 3.1"}
     ]
   end
 

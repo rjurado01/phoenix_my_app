@@ -1,7 +1,7 @@
 use Mix.Config
 
 # Configure your database
-config :my_app, MyApp.Repo,
+config :my_app, App.Repo,
   username: "postgres",
   password: "postgres",
   database: "my_app_dev",
@@ -15,7 +15,7 @@ config :my_app, MyApp.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :my_app, MyAppWeb.Endpoint,
+config :my_app, Web.Endpoint,
   http: [port: 4000],
   debug_errors: false,
   code_reloader: true,

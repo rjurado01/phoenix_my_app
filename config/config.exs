@@ -8,14 +8,14 @@
 use Mix.Config
 
 config :my_app,
-  ecto_repos: [MyApp.Repo]
+  ecto_repos: [App.Repo]
 
 # Configures the endpoint
-config :my_app, MyAppWeb.Endpoint,
+config :my_app, Web.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "B73wtO2ZUJVV11ZUjpGCSjT1hiZTdrCS6wCZEqs+PCR7mtVIVh+KnkqnznJfiD3/",
-  render_errors: [view: MyAppWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: MyApp.PubSub, adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: Web.ErrorView, accepts: ~w(json)],
+  pubsub: [name: App.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -26,7 +26,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 # Guardian config
-config :my_app, MyAppWeb.Guardian,
+config :my_app, Web.Guardian,
   issuer: "myApp",
   secret_key: "7O67/ngimtUReRqq9J9E1iitobPYnfKtW4J713FFKUupunA3Yw52vhBmj488upFF"
 
