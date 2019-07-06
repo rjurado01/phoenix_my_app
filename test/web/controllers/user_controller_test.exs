@@ -1,8 +1,7 @@
 defmodule Web.UserControllerTest do
   use Web.ConnCase
 
-  alias App.Auth
-  alias App.Auth.User
+  alias App.User
   alias Web.UserView
 
   import Web.Guardian
@@ -20,7 +19,7 @@ defmodule Web.UserControllerTest do
   @invalid_attrs %{email: nil, is_active: nil, password: nil}
 
   def fixture(:user) do
-    {:ok, user} = Auth.create_user(@create_attrs)
+    {:ok, user} = User.create(@create_attrs)
     user
   end
 
@@ -45,17 +44,26 @@ defmodule Web.UserControllerTest do
     {:ok, user: user}
   end
 
-  describe "index" do
+  describe "#index" do
     setup [:set_auth_header]
 
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
-      users = App.Auth.list_users
+      users = User.all
       assert json_response(conn, 200) == render_json(UserView, "index.json", users: users)
     end
   end
 
-  describe "create user" do
+  describe "#show" do
+    setup [:create_user, :set_auth_header]
+
+    test "returns current user", %{conn: conn, user: user} do
+      conn = get(conn, Routes.user_path(conn, :show, user))
+      assert json_response(conn, 200) == render_json(UserView, "show.json", user: user)
+    end
+  end
+
+  describe "#create" do
     setup [:set_auth_header]
 
     test "renders user when data is valid", %{conn: conn} do
@@ -75,7 +83,7 @@ defmodule Web.UserControllerTest do
     end
   end
 
-  describe "update user" do
+  describe "#update" do
     setup [:create_user, :set_auth_header]
 
     test "renders user when data is valid", %{conn: conn, user: %User{id: id} = user} do
@@ -86,7 +94,7 @@ defmodule Web.UserControllerTest do
                "id" => id,
                "email" => @update_attrs.email,
                "is_active" => @update_attrs.is_active,
-             } == render_json(UserView, "show.json", user: App.Auth.get_user!(id))["data"]
+             } == render_json(UserView, "show.json", user: User.find(id))["data"]
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do
@@ -95,7 +103,7 @@ defmodule Web.UserControllerTest do
     end
   end
 
-  describe "delete user" do
+  describe "#delete" do
     setup [:create_user, :set_auth_header]
 
     test "deletes chosen user", %{conn: conn, user: user} do
@@ -105,6 +113,35 @@ defmodule Web.UserControllerTest do
       assert_error_sent 404, fn ->
         get(conn, Routes.user_path(conn, :show, user))
       end
+    end
+  end
+
+  describe "#me" do
+    setup [:create_user, :set_auth_header]
+
+    test "returns current user", %{conn: conn, current_user: current_user} do
+      conn = get(conn, Routes.user_path(conn, :me))
+      assert json_response(conn, 200) == render_json(UserView, "show.json", user: current_user)
+    end
+  end
+
+  describe "#sign_in" do
+    setup [:create_user]
+
+    test "returns valid jwt token when all is ok", %{conn: conn, user: user} do
+      data = %{email: user.email, password: "some password"}
+      conn = post(conn, Routes.user_path(conn, :sign_in), data)
+      response = json_response(conn, 200)
+
+      token = response["data"]["jwt"]
+      {:ok, claims} = Web.Guardian.decode_and_verify(token)
+      assert User.find(user.id).auth_tokens == [claims["sub"]]
+    end
+
+    test "return 401 when password is invalid", %{conn: conn, user: user} do
+      data = %{email: user.email, password: "invalid"}
+      conn = post(conn, Routes.user_path(conn, :sign_in), data)
+      json_response(conn, 401)
     end
   end
 end

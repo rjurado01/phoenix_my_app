@@ -1,6 +1,7 @@
-defmodule App.Auth.User do
+defmodule App.User do
   use Ecto.Schema
   import Ecto.Changeset
+  use App.Model
 
   schema "users" do
     field :email, :string
