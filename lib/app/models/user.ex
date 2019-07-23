@@ -24,6 +24,10 @@ defmodule App.User do
     |> put_password_hash()
   end
 
+  def changeset(attrs) do
+    changeset(%App.User{}, attrs)
+  end
+
   # def list do
   #   App.Repo.all(__MODULE__)
   # end

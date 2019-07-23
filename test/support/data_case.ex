@@ -21,6 +21,7 @@ defmodule App.DataCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+      import App.Factory
       import App.DataCase
     end
   end
