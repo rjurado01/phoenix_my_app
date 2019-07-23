@@ -18,7 +18,7 @@ defmodule App.Auth do
       {:ok, user}
     else
       {:error, "Wrong email or password"}
-    end
+end
   end
 
   def generate_auth_token(user) do
