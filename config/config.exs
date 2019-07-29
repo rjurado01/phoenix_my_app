@@ -30,6 +30,10 @@ config :my_app, Web.Guardian,
   issuer: "myApp",
   secret_key: "7O67/ngimtUReRqq9J9E1iitobPYnfKtW4J713FFKUupunA3Yw52vhBmj488upFF"
 
+# Arc config
+config :arc,
+  storage: Arc.Storage.Local
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

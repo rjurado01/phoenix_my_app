@@ -45,7 +45,8 @@ defmodule MyApp.MixProject do
       {:corsica, "~> 1.0"},
       {:guardian, "~> 1.0"},
       {:ex_machina, "~> 2.3", only: :test},
-      {:poison, "~> 3.1"}
+      {:poison, "~> 3.1"},
+      {:arc_ecto, "~> 0.11.1"}
     ]
   end
 

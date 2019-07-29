@@ -1,7 +1,10 @@
 defmodule App.User do
   use Ecto.Schema
-  import Ecto.Changeset
+  use Arc.Ecto.Schema
   use App.Model
+
+  import Ecto.Changeset
+  import App.Avatar
 
   schema "users" do
     field :email, :string
@@ -9,6 +12,7 @@ defmodule App.User do
     field :password, :string, virtual: true
     field :password_hash, :string
     field :auth_tokens, {:array, :string}
+    field :avatar, App.Avatar.Type
 
     timestamps()
   end
@@ -22,6 +26,12 @@ defmodule App.User do
     |> validate_length(:password, min: 8)
     |> unique_constraint(:email)
     |> put_password_hash()
+  end
+
+  def update_changeset(user, attrs) do
+    user
+    |> cast_attachments(attrs, [:avatar])
+    |> validate_required([:avatar])
   end
 
   def changeset(attrs) do

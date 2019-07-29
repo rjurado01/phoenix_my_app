@@ -19,7 +19,7 @@ defmodule App.Model do
 
       def update(object, attrs) do
         object
-        |> __MODULE__.changeset(attrs)
+        |> __MODULE__.update_changeset(attrs)
         |> Repo.update()
       end
 

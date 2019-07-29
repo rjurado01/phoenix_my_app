@@ -41,7 +41,7 @@ defmodule Web.Endpoint do
     signing_salt: "GUsl3+hK"
 
   plug Corsica,
-    origins: "http://localhost:8000",
+    origins: "*",
     log: [rejected: :error, invalid: :warn, accepted: :debug]
 
   plug Web.Router

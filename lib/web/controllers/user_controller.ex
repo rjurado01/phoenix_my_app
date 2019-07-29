@@ -27,7 +27,9 @@ defmodule Web.UserController do
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
+    IO.puts '-----------'
     user = User.find(id)
+    IO.puts '-----------'
 
     with {:ok, %User{} = user} <- User.update(user, user_params) do
       render(conn, "show.json", user: user)
