@@ -21,26 +21,13 @@ defmodule App.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:email, :is_active, :password])
+    |> cast_attachments(attrs, [:avatar])
     |> validate_required([:email, :is_active, :password])
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 8)
     |> unique_constraint(:email)
     |> put_password_hash()
   end
-
-  def update_changeset(user, attrs) do
-    user
-    |> cast_attachments(attrs, [:avatar])
-    |> validate_required([:avatar])
-  end
-
-  def changeset(attrs) do
-    changeset(%App.User{}, attrs)
-  end
-
-  # def list do
-  #   App.Repo.all(__MODULE__)
-  # end
 
   defp put_password_hash(
     %Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset

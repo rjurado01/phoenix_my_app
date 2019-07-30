@@ -14,7 +14,8 @@ defmodule Web.UserControllerTest do
   @update_attrs %{
     email: "new@email.com",
     is_active: false,
-    password: "some updated password"
+    password: "some updated password",
+    avatar: %Plug.Upload{path: "test/support/images/avatar.png", filename: "avatar.png"}
   }
   @invalid_attrs %{email: nil, is_active: nil, password: nil}
 
@@ -73,7 +74,8 @@ defmodule Web.UserControllerTest do
       assert %{
                 "id" => response["id"],
                 "email" => @create_attrs.email,
-                "is_active" => @create_attrs.is_active
+                "is_active" => @create_attrs.is_active,
+                "avatar_url" => nil
               } == response
     end
 
@@ -90,10 +92,13 @@ defmodule Web.UserControllerTest do
       conn = put(conn, Routes.user_path(conn, :update, user), user: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
+      user = App.User.find(user.id)
+
       assert %{
                "id" => id,
                "email" => @update_attrs.email,
                "is_active" => @update_attrs.is_active,
+               "avatar_url" => App.Avatar.url({user.avatar, user})
              } == render_json(UserView, "show.json", user: User.find(id))["data"]
     end
 

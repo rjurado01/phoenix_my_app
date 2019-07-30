@@ -3,6 +3,10 @@ defmodule App.Model do
 
   defmacro __using__(_params) do
     quote do
+      def changeset(attrs) do
+        changeset(struct(__MODULE__), attrs)
+      end
+
       def all do
         Repo.all(__MODULE__)
       end
@@ -19,7 +23,7 @@ defmodule App.Model do
 
       def update(object, attrs) do
         object
-        |> __MODULE__.update_changeset(attrs)
+        |> __MODULE__.changeset(attrs)
         |> Repo.update()
       end
 

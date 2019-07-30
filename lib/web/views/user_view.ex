@@ -11,9 +11,12 @@ defmodule Web.UserView do
   end
 
   def render("user.json", %{user: user}) do
-    %{id: user.id,
+    %{
+      id: user.id,
       email: user.email,
-      is_active: user.is_active}
+      is_active: user.is_active,
+      avatar_url: App.Avatar.url({user.avatar, user})
+    }
   end
 
   def render("jwt.json", %{jwt: jwt}) do
