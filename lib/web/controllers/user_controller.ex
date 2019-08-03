@@ -8,6 +8,8 @@ defmodule Web.UserController do
   action_fallback Web.FallbackController
 
   def index(conn, _params) do
+    authorize(conn, Web.UserPolicy, :index)
+
     users = User.all
     render(conn, "index.json", users: users)
   end
