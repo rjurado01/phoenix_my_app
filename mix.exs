@@ -20,7 +20,7 @@ defmodule MyApp.MixProject do
   def application do
     [
       mod: {App.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :mongodb]
     ]
   end
 
@@ -46,7 +46,8 @@ defmodule MyApp.MixProject do
       {:guardian, "~> 1.0"},
       {:ex_machina, "~> 2.3", only: :test},
       {:poison, "~> 3.1"},
-      {:arc_ecto, "~> 0.11.1"}
+      {:arc_ecto, "~> 0.11.1"},
+      {:mongodb, "~> 0.5.1"}
     ]
   end
 

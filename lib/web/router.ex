@@ -15,12 +15,13 @@ defmodule Web.Router do
     pipe_through :api
 
     post "/session", UserController, :sign_in
+
+    resources "/users", UserController, only: [:index, :show, :create, :update, :delete]
   end
 
   scope "/api", Web do
     pipe_through [:api, :jwt_authenticated]
 
-    resources "/users", UserController, only: [:index, :show, :create, :update, :delete]
 
     get "/me", UserController, :me
 

@@ -11,9 +11,10 @@ defmodule App.Application do
       # Start the Ecto repository
       App.Repo,
       # Start the endpoint when the application starts
-      Web.Endpoint
+      Web.Endpoint,
       # Starts a worker by calling: App.Worker.start_link(arg)
       # {App.Worker, arg},
+      {Mongo, [name: :mongo, database: "scrumbox_development", pool_size: 4]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

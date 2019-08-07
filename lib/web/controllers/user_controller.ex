@@ -8,10 +8,16 @@ defmodule Web.UserController do
   action_fallback Web.FallbackController
 
   def index(conn, _params) do
-    authorize(conn, Web.UserPolicy, :index)
+    # authorize(conn, Web.UserPolicy, :index)
 
-    users = User.all
-    render(conn, "index.json", users: users)
+    users = Mongo.find(:mongo, "users", %{}) |> Enum.to_list()
+
+    conn
+    |> put_resp_header("content-type", "application/json; charset=utf-8")
+    |> send_resp(200, Poison.encode!(users))
+
+    # users = User.all
+    # render(conn, "index.json", users: users)
   end
 
   def create(conn, %{"user" => user_params}) do
