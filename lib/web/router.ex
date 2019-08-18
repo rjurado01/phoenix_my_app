@@ -14,7 +14,7 @@ defmodule Web.Router do
   scope "/api", Web do
     pipe_through :api
 
-    post "/session", UserController, :sign_in
+    post "/session", SessionController, :create
   end
 
   scope "/api", Web do
@@ -24,6 +24,6 @@ defmodule Web.Router do
 
     get "/me", UserController, :me
 
-    delete "/session", UserController, :sign_out
+    delete "/session", SessionController, :delete
   end
 end

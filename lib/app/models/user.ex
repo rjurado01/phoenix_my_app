@@ -4,15 +4,17 @@ defmodule App.User do
   use App.Model
 
   import Ecto.Changeset
-  import App.Avatar
 
   schema "users" do
     field :email, :string
-    field :is_active, :boolean, default: false
+    field :avatar, App.Avatar.Type
+
     field :password, :string, virtual: true
     field :password_hash, :string
     field :auth_tokens, {:array, :string}
-    field :avatar, App.Avatar.Type
+
+    field :is_active, :boolean, default: false
+    field :is_admin, :boolean, default: false
 
     timestamps()
   end
@@ -20,9 +22,9 @@ defmodule App.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:email, :is_active, :password])
+    |> cast(attrs, [:email, :is_active, :is_admin, :password])
     |> cast_attachments(attrs, [:avatar])
-    |> validate_required([:email, :is_active, :password])
+    |> validate_required([:email, :is_active, :is_admin, :password])
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 8)
     |> unique_constraint(:email)

@@ -13,6 +13,13 @@ defmodule Web.FallbackController do
     |> render(:"404")
   end
 
+  def call(conn, {:error, :unauthorized}) do
+    conn
+    |> put_status(:forbidden)
+    |> put_view(Web.ErrorView)
+    |> render(:"403")
+  end
+
   def call(conn, {:error, %Ecto.Changeset{}}) do
     conn
     |> put_status(:unprocessable_entity)

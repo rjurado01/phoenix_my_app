@@ -10,6 +10,15 @@ defmodule App.UserFactory do
 
         struct(%App.User{}, App.User.changeset(attrs).changes)
       end
+
+      def user_admin_factory do
+        struct!(
+          user_factory(),
+          %{
+            is_admin: true
+          }
+        )
+      end
     end
   end
 end

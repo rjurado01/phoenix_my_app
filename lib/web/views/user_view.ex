@@ -1,5 +1,6 @@
 defmodule Web.UserView do
   use Web, :view
+
   alias Web.UserView
 
   def render("index.json", %{users: users}) do

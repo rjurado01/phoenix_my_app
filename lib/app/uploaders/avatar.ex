@@ -31,7 +31,7 @@ defmodule App.Avatar do
   end
 
   # Override the storage directory:
-  def storage_dir(version, {file, _scope}) do
+  def storage_dir(_version, {_file, _scope}) do
     "uploads/user/avatars"
   end
 

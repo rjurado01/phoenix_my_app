@@ -19,13 +19,18 @@ defmodule Web.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
+
       alias Web.Router.Helpers, as: Routes
 
       import App.Factory
-      import App.ConnCaseHelper
+      import Web.ConnCaseHelper
 
       # The default endpoint for testing
       @endpoint Web.Endpoint
+
+      setup %{conn: conn} do
+        {:ok, conn: put_req_header(conn, "accept", "application/json")}
+      end
     end
   end
 
