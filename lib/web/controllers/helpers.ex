@@ -1,5 +1,5 @@
 defmodule Web.Controllers.Helpers do
-  def authorize(conn, policy, action, resource) do
+  def authorize(conn, resource, policy, action) do
     current_user = Guardian.Plug.current_resource(conn)
 
     if apply(policy, action, [current_user, resource]) do
@@ -9,15 +9,11 @@ defmodule Web.Controllers.Helpers do
     end
   end
 
-  def authorize(conn, policy, action) do
-    authorize(conn, policy, action, nil)
+  def authorize(conn, resource) do
+    authorize(conn, resource, conn.private.phoenix_controller.policy, conn.private.phoenix_action)
   end
 
   def authorize(conn) do
-    controller_name = Atom.to_string(conn.private.phoenix_controller)
-    policy_name = String.replace(controller_name, "Controller", "Policy")
-    policy = String.to_existing_atom(policy_name)
-
-    authorize(conn, policy, conn.private.phoenix_action, nil)
+    authorize(conn, nil)
   end
 end

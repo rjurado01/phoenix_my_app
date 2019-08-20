@@ -25,7 +25,6 @@ defmodule Web.UserControllerTest do
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
       users = User.all
-
       assert json_response(conn, 200) == render_json(UserView, "index.json", users: users)
     end
   end
@@ -35,7 +34,6 @@ defmodule Web.UserControllerTest do
 
     test "returns 403", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
-
       assert json_response(conn, 403)
     end
   end
@@ -71,6 +69,15 @@ defmodule Web.UserControllerTest do
     end
   end
 
+  describe "#create (as user)" do
+    setup [:sign_in]
+
+    test "returns 403", %{conn: conn} do
+      conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
+      assert json_response(conn, 403)
+    end
+  end
+
   describe "#update (as me)" do
     setup [:sign_in]
 
@@ -94,6 +101,16 @@ defmodule Web.UserControllerTest do
     end
   end
 
+  describe "#update (as other user)" do
+    setup [:sign_in]
+
+    test "returns 403", %{conn: conn} do
+      other_user = insert(:user)
+      conn = put(conn, Routes.user_path(conn, :update, other_user), user: @update_attrs)
+      assert json_response(conn, 403)
+    end
+  end
+
   describe "#delete (as admin)" do
     setup [:sign_in_admin]
 
@@ -105,6 +122,16 @@ defmodule Web.UserControllerTest do
       assert_error_sent 404, fn ->
         get(conn, Routes.user_path(conn, :show, user))
       end
+    end
+  end
+
+  describe "#update (as user)" do
+    setup [:sign_in]
+
+    test "returns 403", %{conn: conn} do
+      other_user = insert(:user)
+      conn = delete(conn, Routes.user_path(conn, :delete, other_user))
+      assert json_response(conn, 403)
     end
   end
 

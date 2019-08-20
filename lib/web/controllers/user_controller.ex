@@ -6,6 +6,8 @@ defmodule Web.UserController do
 
   action_fallback Web.FallbackController
 
+  def policy, do: Web.UserPolicy
+
   def index(conn, _params) do
     with :ok <- authorize(conn) do
       users = User.all
@@ -25,8 +27,9 @@ defmodule Web.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    with :ok <- authorize(conn) do
-      user = User.find(id)
+    user = User.find(id)
+
+    with :ok <- authorize(conn, user) do
       render(conn, "show.json", user: user)
     end
   end
@@ -34,7 +37,7 @@ defmodule Web.UserController do
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = User.find(id)
 
-    with :ok <- authorize(conn, Web.UserPolicy, :update, user),
+    with :ok <- authorize(conn, user),
          {:ok, %User{} = user} <- User.update(user, user_params) do
       render(conn, "show.json", user: user)
     end
@@ -43,7 +46,7 @@ defmodule Web.UserController do
   def delete(conn, %{"id" => id}) do
     user = User.find(id)
 
-    with :ok <- authorize(conn, Web.UserPolicy, :delete, user),
+    with :ok <- authorize(conn, user),
          {:ok, %User{}} <- User.delete(user) do
       send_resp(conn, :no_content, "")
     end
