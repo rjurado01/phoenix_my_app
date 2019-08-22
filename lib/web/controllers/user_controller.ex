@@ -2,7 +2,6 @@ defmodule Web.UserController do
   use Web, :controller
 
   alias App.User
-  alias Web.Guardian
 
   action_fallback Web.FallbackController
 
@@ -53,7 +52,6 @@ defmodule Web.UserController do
   end
 
   def me(conn, _params) do
-    user = Guardian.Plug.current_resource(conn)
-    render(conn, "show.json", user: user)
+    render(conn, "show.json", user: conn.assigns.current_user)
   end
 end

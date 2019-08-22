@@ -9,6 +9,7 @@ defmodule Web.Router do
 
   pipeline :jwt_authenticated do
     plug Guardian.AuthPipeline
+    plug Web.CurrentUser
   end
 
   scope "/api", Web do

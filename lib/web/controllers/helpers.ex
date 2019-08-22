@@ -1,8 +1,6 @@
 defmodule Web.Controllers.Helpers do
   def authorize(conn, resource, policy, action) do
-    current_user = Guardian.Plug.current_resource(conn)
-
-    if apply(policy, action, [current_user, resource]) do
+    if apply(policy, action, [conn.assigns.current_user, resource]) do
       :ok
     else
       {:error, :unauthorized}
