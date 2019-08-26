@@ -24,7 +24,7 @@ defmodule Web do
       import Plug.Conn
       import Web.Gettext
 
-      import Web.Controllers.Helpers
+      import Web.ControllerHelpers
 
       alias Web.Router.Helpers, as: Routes
     end

@@ -15,6 +15,10 @@ defmodule Web.ErrorView do
   end
 
   def render("401.json", %{message: message}) do
-    %{errors: %{details: message}}
+    %{errors: %{detail: message}}
+  end
+
+  def render("404.json", _assigns) do
+    %{errors: %{detail: "Not Found"}}
   end
 end

@@ -46,6 +46,12 @@ defmodule Web.UserControllerTest do
       conn = get(conn, Routes.user_path(conn, :show, user))
       assert json_response(conn, 200) == render_json(UserView, "show.json", user: user)
     end
+
+    test "returns 404 when id is invalid", %{conn: conn} do
+      assert_error_sent 404, fn ->
+        get(conn, Routes.user_path(conn, :show, -1))
+      end
+    end
   end
 
   describe "#create (as admin)" do
@@ -123,9 +129,15 @@ defmodule Web.UserControllerTest do
         get(conn, Routes.user_path(conn, :show, user))
       end
     end
+
+    test "returns 404 when id is invalid", %{conn: conn} do
+      assert_error_sent 404, fn ->
+        delete(conn, Routes.user_path(conn, :delete, -1))
+      end
+    end
   end
 
-  describe "#update (as user)" do
+  describe "#delete (as user)" do
     setup [:sign_in]
 
     test "returns 403", %{conn: conn} do

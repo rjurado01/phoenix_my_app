@@ -5,48 +5,34 @@ defmodule Web.UserController do
 
   action_fallback Web.FallbackController
 
-  def policy, do: Web.UserPolicy
+  plug :load_resource, [model: App.User] when action in ~w(show update delete)a
+  plug :authorize_action, [policy: Web.UserPolicy] when action not in [:me]
 
   def index(conn, _params) do
-    with :ok <- authorize(conn) do
-      users = User.all
-      render(conn, "index.json", users: users)
-    end
+    users = User.all
+    render(conn, "index.json", users: users)
   end
 
   def create(conn, %{"user" => user_params}) do
-    with :ok <- authorize(conn),
-         {:ok, %User{} = user} <- User.create(user_params)
-    do
+    with {:ok, %User{} = user} <- User.create(user_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.user_path(conn, :show, user))
       |> render("show.json", user: user)
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    user = User.find(id)
+  def show(conn, _) do
+    render(conn, "show.json", user: conn.assigns.resource)
+  end
 
-    with :ok <- authorize(conn, user) do
+  def update(conn, %{"user" => user_params}) do
+    with {:ok, %User{} = user} <- User.update(conn.assigns.resource, user_params) do
       render(conn, "show.json", user: user)
     end
   end
 
-  def update(conn, %{"id" => id, "user" => user_params}) do
-    user = User.find(id)
-
-    with :ok <- authorize(conn, user),
-         {:ok, %User{} = user} <- User.update(user, user_params) do
-      render(conn, "show.json", user: user)
-    end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    user = User.find(id)
-
-    with :ok <- authorize(conn, user),
-         {:ok, %User{}} <- User.delete(user) do
+  def delete(conn, _) do
+    with {:ok, %User{}} <- User.delete(conn.assigns.resource) do
       send_resp(conn, :no_content, "")
     end
   end
