@@ -4,7 +4,7 @@ defmodule Web.SessionController do
   alias App.Auth
   alias Web.Guardian
 
-  def create(conn, %{"email" => email, "password" => password}) do
+  def create(conn, %{"email" => email, "password" => password}, _) do
     with {:ok, user} <- Auth.authenticate_user(email, password),
          {:ok, token, _claims} <- Guardian.encode_and_sign(user) do
         conn
@@ -20,7 +20,7 @@ defmodule Web.SessionController do
     end
   end
 
-  def delete(conn, _params) do
+  def delete(conn, _params, _assigns) do
     claims = Guardian.Plug.current_claims(conn)
     user = Guardian.Plug.current_resource(conn)
     token = claims["sub"]

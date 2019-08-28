@@ -28,6 +28,11 @@ defmodule Web do
 
       action_fallback Web.FallbackController
 
+      def action(conn, _) do
+        args = [conn, conn.params, conn.assigns]
+        apply(__MODULE__, action_name(conn), args)
+      end
+
       alias Web.Router.Helpers, as: Routes
     end
   end

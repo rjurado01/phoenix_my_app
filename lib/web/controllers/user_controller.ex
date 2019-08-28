@@ -6,12 +6,12 @@ defmodule Web.UserController do
   plug :load_resource, [model: App.User] when action in ~w(show update delete)a
   plug :authorize_action, [policy: Web.UserPolicy] when action not in [:me]
 
-  def index(conn, _params) do
+  def index(conn, _, _) do
     users = User.all
     render(conn, "index.json", users: users)
   end
 
-  def create(conn, %{"user" => user_params}) do
+  def create(conn, %{"user" => user_params}, _) do
     with {:ok, %User{} = user} <- User.create(user_params) do
       conn
       |> put_status(:created)
@@ -19,23 +19,23 @@ defmodule Web.UserController do
     end
   end
 
-  def show(conn, _) do
-    render(conn, "show.json", user: conn.assigns.resource)
+  def show(conn, _, %{resource: resource}) do
+    render(conn, "show.json", user: resource)
   end
 
-  def update(conn, %{"user" => user_params}) do
-    with {:ok, %User{} = user} <- User.update(conn.assigns.resource, user_params) do
+  def update(conn, %{"user" => user_params}, %{resource: resource}) do
+    with {:ok, %User{} = user} <- User.update(resource, user_params) do
       render(conn, "show.json", user: user)
     end
   end
 
-  def delete(conn, _) do
-    with {:ok, %User{}} <- User.delete(conn.assigns.resource) do
+  def delete(conn, _, %{resource: resource}) do
+    with {:ok, %User{}} <- User.delete(resource) do
       send_resp(conn, :no_content, "")
     end
   end
 
-  def me(conn, _params) do
-    render(conn, "show.json", user: conn.assigns.current_user)
+  def me(conn, _, %{current_user: current_user}) do
+    render(conn, "show.json", user: current_user)
   end
 end
