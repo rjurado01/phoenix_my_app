@@ -4,8 +4,6 @@ defmodule Web.SessionController do
   alias App.Auth
   alias Web.Guardian
 
-  action_fallback Web.FallbackController
-
   def create(conn, %{"email" => email, "password" => password}) do
     with {:ok, user} <- Auth.authenticate_user(email, password),
          {:ok, token, _claims} <- Guardian.encode_and_sign(user) do

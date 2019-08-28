@@ -3,8 +3,6 @@ defmodule Web.UserController do
 
   alias App.User
 
-  action_fallback Web.FallbackController
-
   plug :load_resource, [model: App.User] when action in ~w(show update delete)a
   plug :authorize_action, [policy: Web.UserPolicy] when action not in [:me]
 

@@ -26,6 +26,8 @@ defmodule Web do
 
       import Web.ControllerHelpers
 
+      action_fallback Web.FallbackController
+
       alias Web.Router.Helpers, as: Routes
     end
   end
