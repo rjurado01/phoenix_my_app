@@ -6,8 +6,15 @@ defmodule Web.UserController do
   plug :load_resource, [model: App.User] when action in ~w(show update delete)a
   plug :authorize_action, [policy: Web.UserPolicy] when action not in [:me]
 
-  def index(conn, _, _) do
+  def index(conn, params, _) do
     users = User.all
+
+    # users = App.User
+    #         |> filter(params)
+    #         |> order(params)
+    #         |> paginate(params)
+    #         |> App.Repo.all
+
     render(conn, "index.json", users: users)
   end
 
@@ -38,4 +45,8 @@ defmodule Web.UserController do
   def me(conn, _, %{current_user: current_user}) do
     render(conn, "show.json", user: current_user)
   end
+
+  # def filter(fiter_params) do
+  #   User |> where(email: "user1@email.com") |> where(id: 2) |> App.Repo.all
+  # end
 end
