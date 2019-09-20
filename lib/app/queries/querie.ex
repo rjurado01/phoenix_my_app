@@ -30,96 +30,36 @@ defmodule App.Query do
               acc ++ [{dir, String.to_atom(field)}]
             end)
 
-          order_by(query, ^order_params)
+          query |>
+            order_by(^order_params)
+          #where([x], ^pagination_query())
         else
           query
         end
       end
 
-      # select id, is_admin
-      # from users
-      # where is_admin >= false and (is_admin != false or id > 5)
-      # order by is_admin asc, id asc;
 
-      # App.User |> Ecto.Query.where([x], x.email == "user2@email.com")
-      #
-      # field = :email
-      # App.User |> Ecto.Query.where([x], field(x, ^field) == "user2@email.com") |> App.Repo.all
-      def paginate(query \\ App.User, limit \\ 20, order_params) do
-        order_field = :is_admin
-        order_value = false
-        id_value = 5
-        limit_value = 2
-
-        cond do
-          order_field and id_value ->
-            where(
-              query,
-              [x],
-              field(x, ^order_field) >= ^order_value and
-                (field(x, ^order_field) != ^order_value or x.id > ^id_value)
-            )
-            |> limit(^limit_value)
-
-          id_value ->
-            where(query, [x], x.id > ^id_value) |> limit(^limit_value)
-            true
-            query |> limit(^limit_value)
+      defp dynamic_item_condition(item) do
+        if item.operator == :> do
+          Ecto.Query.dynamic([x], field(x, ^item.field) > ^item.value)
+        else
+          Ecto.Query.dynamic([x], field(x, ^item.field) < ^item.value)
         end
       end
 
-      defmacro custom_where(query, field, value, operator) do
-        result = {
-          operator,
-          [context: Elixir, import: Kernel],
-          [
-            {:field, [], [query, {:^, [], [field]}]},
-            {:^, [], [value]}
-          ]
-        }
+      defp dynamic_queries(fields) do
+        [item | tail] = fields
 
-        IO.inspect(Macro.to_string(result))
+        if Enum.count(tail) > 0 do
+          item_query = dynamic_item_condition(item)
 
-        result
-      end
-
-      defmacro m1(x) do
-        {
-          :==,
-          [context: Elixir, import: Kernel],
-          [
-            {:field, [], [x, :is_admin]},
-            true
-          ]
-        }
-      end
-
-      defmacro build_query(x) do
-        conditions = Enum.map([true, false], fn v ->
-          {
-            :==,
-            [context: Elixir, import: Kernel],
-            [
-              {:field, [], [x, :is_admin]},
-              v
-            ]
-          }
-        end)
-
-        {
-          :and,
-          [context: Elixir, import: Kernel],
-          conditions
-        }
-      end
-
-      def example do
-        Ecto.Query.where(
-          App.User,
-          [x],
-          build_query(x)
-          # custom_where(x, :email, "some@email.com", :==) and custom_where(x, :is_admin, true, :==)
-        )
+          Ecto.Query.dynamic(
+            [x],
+            ^item_query or (field(x, ^item.field) == ^item.value and ^dynamic_queries(tail))
+          )
+        else
+          dynamic_item_condition(item)
+        end
       end
     end
   end

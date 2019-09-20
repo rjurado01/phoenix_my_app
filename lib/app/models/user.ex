@@ -4,6 +4,7 @@ defmodule App.User do
   use App.Model
 
   import Ecto.Changeset
+  import Ecto.Query
 
   schema "users" do
     field :email, :string
@@ -19,6 +20,8 @@ defmodule App.User do
     timestamps()
   end
 
+  def uniq_fields, do: [:email]
+
   @doc false
   def changeset(user, attrs) do
     user
@@ -29,6 +32,14 @@ defmodule App.User do
     |> validate_length(:password, min: 8)
     |> unique_constraint(:email)
     |> put_password_hash()
+  end
+
+  def filter_by(query, {:email, value}) do
+    where(query, email: ^value)
+  end
+
+  def filter_by(query, {:is_active, value}) do
+    where(query, is_active: ^value)
   end
 
   defp put_password_hash(
