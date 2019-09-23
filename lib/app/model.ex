@@ -3,6 +3,8 @@ defmodule App.Model do
 
   defmacro __using__(_params) do
     quote do
+      import Ecto.Query
+
       def changeset(attrs) do
         changeset(struct(__MODULE__), attrs)
       end
@@ -29,6 +31,16 @@ defmodule App.Model do
 
       def delete(object) do
         Repo.delete(object)
+      end
+
+      def filter(params) do
+        Enum.reduce(params, __MODULE__, fn {field, value}, acc ->
+          try do
+            where(acc, [x], ^filter_by(field, value))
+          rescue
+            ArgumentError -> __MODULE__
+          end
+        end)
       end
     end
   end

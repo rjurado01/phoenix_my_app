@@ -4,7 +4,6 @@ defmodule App.User do
   use App.Model
 
   import Ecto.Changeset
-  import Ecto.Query
 
   schema "users" do
     field :email, :string
@@ -34,12 +33,8 @@ defmodule App.User do
     |> put_password_hash()
   end
 
-  def filter_by(query, {:email, value}) do
-    where(query, email: ^value)
-  end
-
-  def filter_by(query, {:is_active, value}) do
-    where(query, is_active: ^value)
+  def filter_by(:email, value) do
+    dynamic([x], x.email == ^value)
   end
 
   defp put_password_hash(
