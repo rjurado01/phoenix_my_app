@@ -9,7 +9,7 @@ defmodule App.Model do
         changeset(struct(__MODULE__), attrs)
       end
 
-      def all do
+      def all(params) do
         Repo.all(__MODULE__)
       end
 

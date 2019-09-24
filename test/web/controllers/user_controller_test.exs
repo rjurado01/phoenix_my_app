@@ -19,13 +19,31 @@ defmodule Web.UserControllerTest do
 
   @invalid_attrs %{email: nil, is_active: nil, password: nil}
 
+  def create_index_users(_) do
+    insert_list(3, :user)
+    :ok
+  end
+
   describe "#index (as admin)" do
-    setup [:sign_in_admin]
+    setup [:sign_in_admin, :create_index_users]
 
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
       users = User.all
       assert json_response(conn, 200) == render_json(UserView, "index.json", users: users)
+    end
+
+    test "apply limit", %{conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :index), limit: 2)
+      assert Enum.count(json_response(conn, 200)["data"]) == 2
+    end
+
+    test "apply sort", %{conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :index), sort: "email-")
+      data = json_response(conn, 200)["data"]
+      db_users = Ecto.Query.order_by(App.User, [desc: :email]) |> App.Repo.all
+      assert Enum.at(data, 0)["email"] == Enum.at(db_users, 3).email
+      assert Enum.at(data, 3)["email"] == Enum.at(db_users, 0).email
     end
   end
 

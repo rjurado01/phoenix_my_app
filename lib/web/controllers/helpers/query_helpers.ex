@@ -7,64 +7,72 @@ defmodule Web.Controller.QueryHelpers do
   #   limit: 10
   # }
   def parse_query_params(params) do
+    IO.inspect params
     with {:ok, order} <- parse_order_params(params),
          {:ok, cursor} <- parse_cursor_params(params),
          {:ok, limit} <- parse_limit_params(params),
          {:ok, filter} <- parse_filter_params(params)
     do
       {:ok, %{order: order, filter: filter,  cursor: cursor, limit: limit}}
-    else
-      {:error, :bad_request}
     end
   end
 
   defp parse_order_params(params) do
     query_params = %{}
 
-    order_info = Map.get(params, :sort)
+    order_info = Map.get(params, "sort")
 
     if order_info do
       fields = String.split(order_info, ",")
 
-      Enum.reduce(fields, %{}, fn x, acc ->
+      order = Enum.reduce(fields, %{}, fn x, acc ->
         matches = Regex.run(~r/(\w+)(-?)/, x)
         field = Enum.at(matches, 1)
         dir = if Enum.at(matches, 2) == "-", do: :desc, else: :asc
 
         Map.put(acc, String.to_atom(field), dir)
       end)
+
+      {:ok, order}
+    else
+      {:ok, nil}
     end
   end
 
   defp parse_cursor_params(params) do
-    {:ok, params.cursor}
+    {:ok, Map.get(params, "cursor")}
   end
 
   defp parse_limit_params(params) do
-    limit = params.limit
+    limit = Map.get(params, "limit")
 
     if is_integer(limit) && limit > 0 && limit < 50 do
       {:ok, limit}
     else
-      {:error}
+      {:ok, 20}
     end
   end
 
   defp parse_filter_params(params) do
-    {:ok, params.filter}
+    {:ok, Map.get(params, "filter")}
   end
 
   def run_query(model, params) do
-    {:ok, parsed_params} = parse_query_params(params)
+    with {:ok, parsed_params} <- parse_query_params(params) do
+      IO.inspect parsed_params
 
-    model
-      |> run_filters(parsed_params.filter)
-      |> run_order(parsed_params.order)
-      |> run_pagination(parsed_params)
+      {:ok, model
+        |> run_filters(parsed_params.filter)
+        |> run_order(parsed_params.order)
+        |> run_pagination(parsed_params)
+      }
+    else
+      :error -> {:error, :bad_request}
+    end
   end
 
   def run_filters(model, params) do
-    if params.filter do
+    if params do
       model.filter(params)
     else
       model
@@ -82,7 +90,7 @@ defmodule Web.Controller.QueryHelpers do
   end
 
   def run_pagination(query, params) do
-    if valid_cursor?(params.cursor) do
+    if params.cursor do
       fields = Map.keys(params.cursor)
       limit = Map.keys(params.limit)
 
@@ -92,10 +100,6 @@ defmodule Web.Controller.QueryHelpers do
     else
       Ecto.Query.limit(query, ^params.limit)
     end
-  end
-
-  defp valid_cursor?(model, cursor) do
-    true
   end
 
   def pagination_query(fields, params) do

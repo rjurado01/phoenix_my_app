@@ -7,9 +7,10 @@ defmodule Web.UserController do
   plug :authorize_action, [policy: Web.UserPolicy] when action not in [:me]
 
   def index(conn, params, _) do
-    users = User |> run_query(params) |> App.Repo.all
-
-    render(conn, "index.json", users: users)
+    with {:ok, query} <- run_query(User, params) do
+      users = App.Repo.all(query)
+      render(conn, "index.json", users: users)
+    end
   end
 
   def create(conn, %{"user" => user_params}, _) do
