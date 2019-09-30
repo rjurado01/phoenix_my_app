@@ -9,7 +9,7 @@ defmodule App.Model do
         changeset(struct(__MODULE__), attrs)
       end
 
-      def all(params) do
+      def all() do
         Repo.all(__MODULE__)
       end
 
@@ -41,6 +41,10 @@ defmodule App.Model do
             ArgumentError -> __MODULE__
           end
         end)
+      end
+
+      def order_by(params) do
+        order_by(__MODULE__, ^params)
       end
     end
   end

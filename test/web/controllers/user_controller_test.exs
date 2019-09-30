@@ -41,9 +41,17 @@ defmodule Web.UserControllerTest do
     test "apply sort", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index), sort: "email-")
       data = json_response(conn, 200)["data"]
-      db_users = Ecto.Query.order_by(App.User, [desc: :email]) |> App.Repo.all
-      assert Enum.at(data, 0)["email"] == Enum.at(db_users, 3).email
-      assert Enum.at(data, 3)["email"] == Enum.at(db_users, 0).email
+      db_users = App.User.order_by([desc: :email]) |> App.Repo.all
+      assert Enum.at(data, 0)["email"] == Enum.at(db_users, 0).email
+      assert Enum.at(data, 3)["email"] == Enum.at(db_users, 3).email
+    end
+
+    test "apply pagination when order by unique field", %{conn: conn} do
+      db_users = App.User.order_by([asc: :email]) |> App.Repo.all
+      cursor = %{email: Enum.at(db_users, 1).email}
+      conn = get(conn, Routes.user_path(conn, :index), sort: "email", limit: 2, cursor: cursor)
+      data = json_response(conn, 200)["data"]
+      assert Enum.at(data, 0)["email"] == Enum.at(db_users, 2).email
     end
   end
 

@@ -8,6 +8,7 @@ defmodule Web.UserController do
 
   def index(conn, params, _) do
     with {:ok, query} <- run_query(User, params) do
+      IO.inspect query
       users = App.Repo.all(query)
       render(conn, "index.json", users: users)
     end

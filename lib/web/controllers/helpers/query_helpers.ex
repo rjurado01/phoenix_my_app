@@ -6,10 +6,9 @@ defmodule Web.Controller.QueryHelpers do
   #   cursor: {name: 'john', surname: 'wilky'},
   #   limit: 10
   # }
-  def parse_query_params(params) do
-    IO.inspect params
+  def parse_query_params(model, params) do
     with {:ok, order} <- parse_order_params(params),
-         {:ok, cursor} <- parse_cursor_params(params),
+         {:ok, cursor} <- parse_cursor_params(model, params),
          {:ok, limit} <- parse_limit_params(params),
          {:ok, filter} <- parse_filter_params(params)
     do
@@ -39,8 +38,18 @@ defmodule Web.Controller.QueryHelpers do
     end
   end
 
-  defp parse_cursor_params(params) do
-    {:ok, Map.get(params, "cursor")}
+  defp parse_cursor_params(model, params) do
+    cursor = Map.get(params, "cursor")
+
+    uniq_field = Enum.find(Map.keys(cursor), fn x ->
+      Enum.member?(model.uniq_fields, String.to_atom(x))
+    end)
+
+    if uniq_field do
+      {:ok, cursor}
+    else
+      :error
+    end
   end
 
   defp parse_limit_params(params) do
@@ -58,7 +67,7 @@ defmodule Web.Controller.QueryHelpers do
   end
 
   def run_query(model, params) do
-    with {:ok, parsed_params} <- parse_query_params(params) do
+    with {:ok, parsed_params} <- parse_query_params(model, params) do
       IO.inspect parsed_params
 
       {:ok, model
@@ -92,11 +101,10 @@ defmodule Web.Controller.QueryHelpers do
   def run_pagination(query, params) do
     if params.cursor do
       fields = Map.keys(params.cursor)
-      limit = Map.keys(params.limit)
 
       query
         |> Ecto.Query.where([x], ^pagination_query(fields, params))
-        |> Ecto.Query.limit(^limit)
+        |> Ecto.Query.limit(^params.limit)
     else
       Ecto.Query.limit(query, ^params.limit)
     end
@@ -104,11 +112,12 @@ defmodule Web.Controller.QueryHelpers do
 
   def pagination_query(fields, params) do
     [field | tail] = fields
+    field_atom = String.to_atom(field)
 
     item = %{
-      field: field,
+      field: field_atom,
       value: params.cursor[field],
-      dir: params.order[field]
+      dir: params.order[field_atom]
     }
 
     if Enum.count(tail) > 0 do
@@ -125,6 +134,7 @@ defmodule Web.Controller.QueryHelpers do
 
 
   def pagination_item_condition(item) do
+    IO.inspect item
     if item.dir == :asc do
       Ecto.Query.dynamic([x], field(x, ^item.field) > ^item.value)
     else
