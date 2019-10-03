@@ -41,14 +41,18 @@ defmodule Web.Controller.QueryHelpers do
   defp parse_cursor_params(model, params) do
     cursor = Map.get(params, "cursor")
 
-    uniq_field = Enum.find(Map.keys(cursor), fn x ->
-      Enum.member?(model.uniq_fields, String.to_atom(x))
-    end)
+    if cursor do
+      uniq_field = Enum.find(Map.keys(cursor), fn x ->
+        Enum.member?(model.uniq_fields, String.to_atom(x))
+      end)
 
-    if uniq_field do
-      {:ok, cursor}
+      if uniq_field, do
+        {:ok, cursor}
+      else
+        :error
+      end
     else
-      :error
+      {:ok, nil}
     end
   end
 
@@ -68,13 +72,14 @@ defmodule Web.Controller.QueryHelpers do
 
   def run_query(model, params) do
     with {:ok, parsed_params} <- parse_query_params(model, params) do
-      IO.inspect parsed_params
-
-      {:ok, model
+      query = model
         |> run_filters(parsed_params.filter)
         |> run_order(parsed_params.order)
         |> run_pagination(parsed_params)
-      }
+
+      resources = App.Repo.all(query)
+
+      {:ok, resources, get_meta(resources, parsed_params)}
     else
       :error -> {:error, :bad_request}
     end

@@ -3,8 +3,11 @@ defmodule Web.UserView do
 
   alias Web.UserView
 
-  def render("index.json", %{users: users}) do
-    %{data: render_many(users, UserView, "user.json")}
+  def render("index.json", %{users: users, meta: meta}) do
+    %{
+      data: render_many(users, UserView, "user.json"),
+      meta: meta
+    }
   end
 
   def render("show.json", %{user: user}) do

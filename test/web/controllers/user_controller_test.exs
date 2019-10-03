@@ -29,13 +29,18 @@ defmodule Web.UserControllerTest do
 
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
-      users = User.all
-      assert json_response(conn, 200) == render_json(UserView, "index.json", users: users)
+
+      assert json_response(conn, 200) ==
+        render_json(UserView, "index.json", users: User.all, meta: %{})
     end
 
     test "apply limit", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index), limit: 2)
-      assert Enum.count(json_response(conn, 200)["data"]) == 2
+      response = json_response(conn, 200)
+      assert Enum.count(response["data"]) == 2
+
+      db_users = App.User.order_by([asc: :id]) |> App.Repo.all
+      assert response["meta"]["cursor"] == %{id: Enum.at(db_users, 2).id}
     end
 
     test "apply sort", %{conn: conn} do
