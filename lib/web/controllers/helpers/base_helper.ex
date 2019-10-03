@@ -1,4 +1,4 @@
-defmodule Web.ControllerHelpers do
+defmodule Web.Controller.BaseHelper do
   def authorize_action(conn, opts) do
     policy = Keyword.get(opts, :policy)
     action = conn.private.phoenix_action

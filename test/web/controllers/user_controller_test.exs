@@ -17,15 +17,44 @@ defmodule Web.UserControllerTest do
     avatar: %Plug.Upload{path: "test/support/images/avatar.png", filename: "avatar.png"}
   }
 
+  @meta %{
+    total_elements: 4,
+    total_pages: 0,
+    page_number: 1,
+    page_size: 20
+  }
+
   @invalid_attrs %{email: nil, is_active: nil, password: nil}
 
+  def create_index_users(_) do
+    insert_list(3, :user)
+    :ok
+  end
+
   describe "#index (as admin)" do
-    setup [:sign_in_admin]
+    setup [:sign_in_admin, :create_index_users]
 
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
-      users = User.all
-      assert json_response(conn, 200) == render_json(UserView, "index.json", users: users)
+      db_users = App.User.order_by([desc: :id]) |> App.Repo.all # default order
+      assert json_response(conn, 200) ==
+        render_json(UserView, "index.json", users: db_users, meta: @meta)
+    end
+
+    test "apply pagination", %{conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :index), page: %{number: 2, size: 2})
+      db_users = App.User.order_by([desc: :id]) |> App.Repo.all
+      data = json_response(conn, 200)["data"]
+      assert Enum.count(data) == 2
+      assert Enum.at(data, 0)["email"] == Enum.at(db_users, 2).email
+    end
+
+    test "apply sort", %{conn: conn} do
+      conn = get(conn, Routes.user_path(conn, :index), sort: "email-")
+      data = json_response(conn, 200)["data"]
+      db_users = App.User.order_by([desc: :email]) |> App.Repo.all
+      assert Enum.at(data, 0)["email"] == Enum.at(db_users, 0).email
+      assert Enum.at(data, 3)["email"] == Enum.at(db_users, 3).email
     end
   end
 

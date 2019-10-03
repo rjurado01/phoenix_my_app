@@ -31,6 +31,10 @@ defmodule App.User do
     |> put_password_hash()
   end
 
+  def filter_by(:email, value) do
+    dynamic([x], x.email == ^value)
+  end
+
   defp put_password_hash(
     %Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset
   ) do

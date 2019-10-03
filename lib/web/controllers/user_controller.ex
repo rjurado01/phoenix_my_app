@@ -6,9 +6,10 @@ defmodule Web.UserController do
   plug :load_resource, [model: App.User] when action in ~w(show update delete)a
   plug :authorize_action, [policy: Web.UserPolicy] when action not in [:me]
 
-  def index(conn, _, _) do
-    users = User.all
-    render(conn, "index.json", users: users)
+  def index(conn, params, _) do
+    with {:ok, result, meta} <- run_query(User, params) do
+      render(conn, "index.json", users: result, meta: meta)
+    end
   end
 
   def create(conn, %{"user" => user_params}, _) do

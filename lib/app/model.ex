@@ -3,6 +3,8 @@ defmodule App.Model do
 
   defmacro __using__(_params) do
     quote do
+      import Ecto.Query
+
       def changeset(attrs) do
         changeset(struct(__MODULE__), attrs)
       end
@@ -29,6 +31,10 @@ defmodule App.Model do
 
       def delete(object) do
         Repo.delete(object)
+      end
+
+      def order_by(params) do
+        order_by(__MODULE__, ^params)
       end
     end
   end

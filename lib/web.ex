@@ -24,7 +24,8 @@ defmodule Web do
       import Plug.Conn
       import Web.Gettext
 
-      import Web.ControllerHelpers
+      import Web.Controller.BaseHelper
+      import Web.Controller.QueryHelper
 
       action_fallback Web.FallbackController
 
