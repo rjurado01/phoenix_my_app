@@ -26,13 +26,12 @@ defmodule Web.UserControllerTest do
 
   @invalid_attrs %{email: nil, is_active: nil, password: nil}
 
-  def create_index_users(_) do
-    insert_list(3, :user)
-    :ok
-  end
-
   describe "#index (as admin)" do
-    setup [:sign_in_admin, :create_index_users]
+    setup [:sign_in_admin]
+
+    setup do
+      insert_list(3, :user) && :ok
+    end
 
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
@@ -55,6 +54,14 @@ defmodule Web.UserControllerTest do
       db_users = App.User.order_by([desc: :email]) |> App.Repo.all
       assert Enum.at(data, 0)["email"] == Enum.at(db_users, 0).email
       assert Enum.at(data, 3)["email"] == Enum.at(db_users, 3).email
+    end
+
+    test "apply email filter", %{conn: conn} do
+      db_user = App.User.last
+      conn = get(conn, Routes.user_path(conn, :index), filter: %{email: db_user.email})
+      data = json_response(conn, 200)["data"]
+      assert Enum.count(data) == 1
+      assert Enum.at(data, 0)["id"] == db_user.id
     end
   end
 

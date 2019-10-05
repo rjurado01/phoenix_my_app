@@ -13,6 +13,10 @@ defmodule App.Model do
         Repo.all(__MODULE__)
       end
 
+      def last do
+        Repo.one(from x in __MODULE__, order_by: [desc: x.id], limit: 1)
+      end
+
       def find(id) do
         Repo.get!(__MODULE__, id)
       end
@@ -35,6 +39,16 @@ defmodule App.Model do
 
       def order_by(params) do
         order_by(__MODULE__, ^params)
+      end
+
+      def filter(params) do
+        Enum.reduce(params, __MODULE__, fn {field, value}, acc ->
+          try do
+            where(acc, [x], ^filter_by(String.to_atom(field), value))
+          rescue
+            ArgumentError -> acc
+          end
+        end)
       end
     end
   end
