@@ -27,4 +27,8 @@ defmodule Web.Router do
 
     delete "/session", SessionController, :delete
   end
+
+  if Mix.env == :dev do
+    forward "/sent_emails", Bamboo.SentEmailViewerPlug
+  end
 end

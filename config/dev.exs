@@ -58,3 +58,6 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Bcrypt
 config :bcrypt_elixir, log_rounds: 6
+
+# Bamboo
+config :my_app, App.Mailer, adapter: Bamboo.LocalAdapter
