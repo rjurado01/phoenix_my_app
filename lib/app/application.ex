@@ -10,10 +10,15 @@ defmodule App.Application do
     children = [
       # Start the Ecto repository
       App.Repo,
+
       # Start the endpoint when the application starts
-      Web.Endpoint
+      Web.Endpoint,
+
       # Starts a worker by calling: App.Worker.start_link(arg)
       # {App.Worker, arg},
+
+      # Start example supervised task
+      {Task.Supervisor, name: App.ExampleSupervisor, max_restarts: 2}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
