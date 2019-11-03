@@ -1,6 +1,7 @@
 defmodule Web.UserControllerTest do
   use Web.ConnCase
   alias App.User
+  alias App.Repo
   alias Web.UserView
 
   @create_attrs %{
@@ -35,14 +36,14 @@ defmodule Web.UserControllerTest do
 
     test "lists all users", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index))
-      db_users = App.User.order_by([desc: :id]) |> App.Repo.all # default order
+      db_users = User |> Repo.order([desc: :id]) |> Repo.all # default order
       assert json_response(conn, 200) ==
         render_json(UserView, "index.json", users: db_users, meta: @meta)
     end
 
     test "apply pagination", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index), page: %{number: 2, size: 2})
-      db_users = App.User.order_by([desc: :id]) |> App.Repo.all
+      db_users = User |> Repo.order([desc: :id]) |> Repo.all
       data = json_response(conn, 200)["data"]
       assert Enum.count(data) == 2
       assert Enum.at(data, 0)["email"] == Enum.at(db_users, 2).email
@@ -51,13 +52,13 @@ defmodule Web.UserControllerTest do
     test "apply sort", %{conn: conn} do
       conn = get(conn, Routes.user_path(conn, :index), sort: "email-")
       data = json_response(conn, 200)["data"]
-      db_users = App.User.order_by([desc: :email]) |> App.Repo.all
+      db_users = User |> Repo.order([desc: :email]) |> Repo.all
       assert Enum.at(data, 0)["email"] == Enum.at(db_users, 0).email
       assert Enum.at(data, 3)["email"] == Enum.at(db_users, 3).email
     end
 
     test "apply email filter", %{conn: conn} do
-      db_user = App.User.last
+      db_user = User.last
       conn = get(conn, Routes.user_path(conn, :index), filter: %{email: db_user.email})
       data = json_response(conn, 200)["data"]
       assert Enum.count(data) == 1
@@ -127,7 +128,7 @@ defmodule Web.UserControllerTest do
       conn = put(conn, Routes.user_path(conn, :update, user), user: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
-      user = App.User.find(user.id)
+      user = User.find(user.id)
 
       assert %{
                "id" => id,

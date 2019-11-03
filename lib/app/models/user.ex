@@ -1,9 +1,5 @@
 defmodule App.User do
-  use Ecto.Schema
-  use Arc.Ecto.Schema
   use App.Model
-
-  import Ecto.Changeset
 
   schema "users" do
     field :email, :string
@@ -22,9 +18,9 @@ defmodule App.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:email, :is_active, :is_admin, :password])
+    |> cast(attrs, ~w[email is_active is_admin password]a)
     |> cast_attachments(attrs, [:avatar])
-    |> validate_required([:email, :is_active, :is_admin, :password])
+    |> validate_required(~w[email password]a)
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 8)
     |> unique_constraint(:email)

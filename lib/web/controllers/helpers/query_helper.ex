@@ -24,7 +24,7 @@ defmodule Web.Controller.QueryHelper do
   end
 
   defp run_filters(model, params) do
-    model.filter(params)
+    model |> App.Repo.filter(params)
   end
 
   defp run_order(query, params) do
