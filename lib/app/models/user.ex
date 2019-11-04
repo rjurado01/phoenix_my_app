@@ -12,6 +12,8 @@ defmodule App.User do
     field :is_active, :boolean, default: false
     field :is_admin, :boolean, default: false
 
+    has_many :invoices, App.Invoice, foreign_key: :owner_id
+
     timestamps()
   end
 
