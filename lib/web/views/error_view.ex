@@ -21,4 +21,12 @@ defmodule Web.ErrorView do
   def render("404.json", _assigns) do
     %{errors: %{detail: "Not Found"}}
   end
+
+  def render("422.json", %{errors: changeset}) do
+    errors = Ecto.Changeset.traverse_errors(changeset, fn {_msg, opts} ->
+      Enum.into(opts, %{})
+    end)
+
+    %{errors: errors}
+  end
 end

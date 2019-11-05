@@ -27,10 +27,10 @@ defmodule Web.FallbackController do
     |> render(:"403")
   end
 
-  def call(conn, {:error, %Ecto.Changeset{}}) do
+  def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)
     |> put_view(Web.ErrorView)
-    |> render(:"422")
+    |> render(:"422", errors: changeset)
   end
 end
