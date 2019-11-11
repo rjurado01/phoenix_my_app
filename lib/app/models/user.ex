@@ -22,11 +22,21 @@ defmodule App.User do
     user
     |> cast(attrs, ~w[email is_active is_admin password]a)
     |> cast_attachments(attrs, [:avatar])
-    |> validate_required(~w[email password]a)
+    |> validate_required(~w[email]a)
+    |> validate_required_password
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 8)
     |> unique_constraint(:email)
     |> put_password_hash()
+  end
+
+  # password is required only on create
+  def validate_required_password(changeset) do
+    if !changeset.data.password_hash do
+      validate_required(changeset, [:password])
+    else
+      changeset
+    end
   end
 
   def filter_by(:email, value) do

@@ -51,4 +51,8 @@ defmodule App.DataCase do
       end)
     end)
   end
+
+  def match_array(array1, array2) do
+    array1 -- array2 == []
+  end
 end

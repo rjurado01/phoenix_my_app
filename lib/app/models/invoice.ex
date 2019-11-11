@@ -11,7 +11,7 @@ defmodule App.Invoice do
     type
     owner_id]a
 
-  @require_fields ~w[
+  @required_fields ~w[
     number
     expedition_date
     sender_legal_id
@@ -39,7 +39,7 @@ defmodule App.Invoice do
   def changeset(invoice, attrs) do
     invoice
     |> cast(attrs, @cast_fields)
-    |> validate_required(@require_fields)
+    |> validate_required(@required_fields)
     |> validate_inclusion(:type, ["emitted", "received"])
   end
 end
