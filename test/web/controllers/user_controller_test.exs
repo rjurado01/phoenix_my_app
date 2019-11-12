@@ -95,7 +95,7 @@ defmodule Web.UserControllerTest do
     setup [:sign_in_admin]
 
     test "renders user when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
+      conn = post(conn, Routes.user_path(conn, :create), data: @create_attrs)
       response = json_response(conn, 201)["data"]
 
       assert %{
@@ -107,7 +107,7 @@ defmodule Web.UserControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @invalid_attrs)
+      conn = post(conn, Routes.user_path(conn, :create), data: @invalid_attrs)
       response = json_response(conn, 422)
       assert response["errors"] != %{}
       assert response["errors"] |> Map.keys == ["email", "password"]
@@ -118,7 +118,7 @@ defmodule Web.UserControllerTest do
     setup [:sign_in]
 
     test "returns 403", %{conn: conn} do
-      conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
+      conn = post(conn, Routes.user_path(conn, :create), data: @create_attrs)
       assert json_response(conn, 403)
     end
   end
@@ -127,7 +127,7 @@ defmodule Web.UserControllerTest do
     setup [:sign_in]
 
     test "renders user when data is valid", %{conn: conn, current_user: %User{id: id} = user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @update_attrs)
+      conn = put(conn, Routes.user_path(conn, :update, user), data: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
       user = User.find(user.id)
@@ -141,7 +141,7 @@ defmodule Web.UserControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, current_user: user} do
-      conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
+      conn = put(conn, Routes.user_path(conn, :update, user), data: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -151,7 +151,7 @@ defmodule Web.UserControllerTest do
 
     test "returns 403", %{conn: conn} do
       other_user = insert(:user)
-      conn = put(conn, Routes.user_path(conn, :update, other_user), user: @update_attrs)
+      conn = put(conn, Routes.user_path(conn, :update, other_user), data: @update_attrs)
       assert json_response(conn, 403)
     end
   end

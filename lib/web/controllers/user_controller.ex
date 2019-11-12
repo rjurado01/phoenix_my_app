@@ -1,10 +1,10 @@
 defmodule Web.UserController do
   use Web, :controller
-
   alias App.User
 
   plug :load_resource, [model: App.User] when action in ~w(show update delete)a
   plug :authorize_action, [policy: Web.UserPolicy] when action not in [:me]
+  plug :authorize_params, [policy: Web.UserPolicy] when action in [:create, :update]
 
   def index(conn, params, _) do
     with {:ok, result, meta} <- run_query(User, params) do
@@ -12,20 +12,20 @@ defmodule Web.UserController do
     end
   end
 
-  def create(conn, %{"user" => user_params}, _) do
-    with {:ok, %User{} = user} <- User.create(user_params) do
+  def show(conn, _, %{resource: resource}) do
+    render(conn, "show.json", user: resource)
+  end
+
+  def create(conn, %{"data" => params}, _) do
+    with {:ok, %User{} = user} <- User.create(params) do
       conn
       |> put_status(:created)
       |> render("show.json", user: user)
     end
   end
 
-  def show(conn, _, %{resource: resource}) do
-    render(conn, "show.json", user: resource)
-  end
-
-  def update(conn, %{"user" => user_params}, %{resource: resource}) do
-    with {:ok, %User{} = user} <- User.update(resource, user_params) do
+  def update(conn, %{"data" => params}, %{resource: resource}) do
+    with {:ok, %User{} = user} <- User.update(resource, params) do
       render(conn, "show.json", user: user)
     end
   end
