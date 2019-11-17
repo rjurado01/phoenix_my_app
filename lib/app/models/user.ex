@@ -3,6 +3,7 @@ defmodule App.User do
 
   schema "users" do
     field :email, :string
+    field :legal_id, :string
     field :avatar, App.Avatar.Type
 
     field :password, :string, virtual: true
@@ -20,7 +21,7 @@ defmodule App.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, ~w[email is_active is_admin password]a)
+    |> cast(attrs, ~w[email legal_id is_active is_admin password]a)
     |> cast_attachments(attrs, [:avatar])
     |> validate_required(~w[email]a)
     |> validate_required_password

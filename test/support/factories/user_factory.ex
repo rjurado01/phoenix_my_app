@@ -4,6 +4,7 @@ defmodule App.UserFactory do
       def user_factory do
         factory_changeset(App.User, %{
           email: sequence(:email, &"user#{&1}@email.com"),
+          legal_id: sequence(:cif, ["11905818Y", "28469798F", "13978824E"]),
           is_active: true,
           password: "12345678"
         })
@@ -11,7 +12,7 @@ defmodule App.UserFactory do
 
       def user_admin_factory do
         struct!(
-          user_factory,
+          user_factory(),
           %{
             is_admin: true
           }

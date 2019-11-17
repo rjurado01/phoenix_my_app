@@ -23,6 +23,8 @@ defmodule App.DataCase do
       import Ecto.Query
       import App.Factory
       import App.DataCase
+
+      use App.GlobalTestHelpers
     end
   end
 
@@ -50,9 +52,5 @@ defmodule App.DataCase do
         opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
       end)
     end)
-  end
-
-  def match_array(array1, array2) do
-    array1 -- array2 == []
   end
 end

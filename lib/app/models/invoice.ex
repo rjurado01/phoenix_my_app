@@ -4,7 +4,7 @@ defmodule App.Invoice do
   @cast_fields ~w[
     number
     expedition_date
-    sender_legal_id
+    emitter_legal_id
     receiver_legal_id
     concept
     total
@@ -14,7 +14,7 @@ defmodule App.Invoice do
   @required_fields ~w[
     number
     expedition_date
-    sender_legal_id
+    emitter_legal_id
     receiver_legal_id
     concept
     total
@@ -26,7 +26,7 @@ defmodule App.Invoice do
     field :expedition_date, :date
     field :number, :integer
     field :receiver_legal_id, :string
-    field :sender_legal_id, :string
+    field :emitter_legal_id, :string
     field :total, :float
     field :type, :string
 
@@ -41,5 +41,23 @@ defmodule App.Invoice do
     |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)
     |> validate_inclusion(:type, ["emitted", "received"])
+    |> validate_owner_cif
+    |> assoc_constraint(:owner)
+  end
+
+  def validate_owner_cif(changeset) do
+    invoice = changeset.changes
+    owner = if Map.has_key?(invoice, :owner_id), do: App.User.find(invoice.owner_id), else: nil
+
+    cond do
+      !owner ->
+        changeset
+      invoice.type == "emitter" && Map.get(invoice, :emitter_legal_id) != owner.legal_id ->
+        add_error(changeset, :emitter_legal_id, "invalid", [validation: :invalid])
+      invoice.type == "received" && Map.get(invoice, :receiver_legal_id) != owner.legal_id ->
+        add_error(changeset, :receiver_legal_id, "invalid", [validation: :invalid])
+      true ->
+        changeset
+    end
   end
 end
