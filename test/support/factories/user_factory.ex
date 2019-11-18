@@ -10,13 +10,12 @@ defmodule App.UserFactory do
         })
       end
 
+      def user_manager_factory do
+        struct!(user_factory(), %{role: "manager"})
+      end
+
       def user_admin_factory do
-        struct!(
-          user_factory(),
-          %{
-            is_admin: true
-          }
-        )
+        struct!(user_factory(), %{role: "admin"})
       end
     end
   end

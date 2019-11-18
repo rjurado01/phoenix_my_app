@@ -1,6 +1,8 @@
 defmodule App.User do
   use App.Model
 
+  @roles ~w[client manager admin]
+
   schema "users" do
     field :email, :string
     field :legal_id, :string
@@ -11,7 +13,7 @@ defmodule App.User do
     field :auth_tokens, {:array, :string}
 
     field :is_active, :boolean, default: false
-    field :is_admin, :boolean, default: false
+    field :role, :string, default: "client"
 
     has_many :invoices, App.Invoice, foreign_key: :owner_id
 
@@ -21,12 +23,13 @@ defmodule App.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, ~w[email legal_id is_active is_admin password]a)
+    |> cast(attrs, ~w[email legal_id is_active role password]a)
     |> cast_attachments(attrs, [:avatar])
     |> validate_required(~w[email]a)
     |> validate_required_password
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 8)
+    |> validate_inclusion(:role, @roles)
     |> unique_constraint(:email)
     |> put_password_hash()
   end

@@ -13,7 +13,6 @@ defmodule Web.UserControllerTest do
   @update_attrs %{
     email: "new@email.com",
     is_active: false,
-    is_admin: true,
     password: "some updated password",
     avatar: %Plug.Upload{path: "test/support/images/avatar.png", filename: "avatar.png"}
   }

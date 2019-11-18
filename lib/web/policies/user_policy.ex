@@ -1,30 +1,32 @@
 defmodule Web.UserPolicy do
-  def index(current_user, _) do
-    current_user.is_admin
+  import Web.ApplicationPolicy
+
+  def index(user, _) do
+    is_admin(user)
   end
 
-  def show(_current_user, _) do
+  def show(_user, _) do
     true
   end
 
-  def create(current_user, _) do
-    current_user.is_admin
+  def create(user, _) do
+    is_admin(user)
   end
 
-  def update(current_user, object) do
-    current_user.is_admin || current_user.id == object.id
+  def update(user, object) do
+    is_admin(user) || user.id == object.id
   end
 
-  def delete(current_user, _object) do
-    current_user.is_admin
+  def delete(user, _object) do
+    is_admin(user)
   end
 
-  def create_params(_current_user) do
+  def create_params(_user) do
     ~w[email is_active password avatar]
   end
 
-  def update_params(current_user) do
-    if current_user.is_admin do
+  def update_params(user) do
+    if is_admin(user) do
       ~w[email is_active password avatar]
     else
       ~w[email password avatar]

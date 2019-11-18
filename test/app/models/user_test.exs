@@ -9,6 +9,7 @@ defmodule App.UserTest do
     assert match_array(changeset.required, [:email, :password])
 
     assert changeset.validations == [
+      role: {:inclusion, ["client", "manager", "admin"]},
       password: {:length, [min: 8]},
       email: {:format, ~r/@/}
     ]
