@@ -37,7 +37,7 @@ defmodule Web.UserControllerTest do
       conn = get(conn, Routes.user_path(conn, :index))
       db_users = User |> Repo.order([desc: :id]) |> Repo.all # default order
       assert json_response(conn, 200) ==
-        render_json(UserView, "index.json", users: db_users, meta: @meta)
+        render_json(UserView, "index.json", records: db_users, meta: @meta)
     end
 
     test "apply pagination", %{conn: conn} do
@@ -49,7 +49,7 @@ defmodule Web.UserControllerTest do
     end
 
     test "apply sort", %{conn: conn} do
-      conn = get(conn, Routes.user_path(conn, :index), sort: "email-")
+      conn = get(conn, Routes.user_path(conn, :index), sort: "-email")
       data = json_response(conn, 200)["data"]
       db_users = User |> Repo.order([desc: :email]) |> Repo.all
       assert Enum.at(data, 0)["email"] == Enum.at(db_users, 0).email
@@ -80,13 +80,12 @@ defmodule Web.UserControllerTest do
     test "returns current user", %{conn: conn} do
       user = insert(:user)
       conn = get(conn, Routes.user_path(conn, :show, user))
-      assert json_response(conn, 200) == render_json(UserView, "show.json", user: user)
+      assert json_response(conn, 200) == render_json(UserView, "show.json", record: user)
     end
 
     test "returns 404 when id is invalid", %{conn: conn} do
-      assert_error_sent 404, fn ->
-        get(conn, Routes.user_path(conn, :show, -1))
-      end
+      conn = get(conn, Routes.user_path(conn, :show, -1))
+      assert json_response(conn, 404)
     end
   end
 
@@ -129,14 +128,14 @@ defmodule Web.UserControllerTest do
       conn = put(conn, Routes.user_path(conn, :update, user), data: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
-      user = User.find(user.id)
+      user = User.get(user.id)
 
       assert %{
                "id" => id,
                "email" => @update_attrs.email,
                "is_active" => @update_attrs.is_active,
                "avatar_url" => App.Avatar.url({user.avatar, user})
-             } == render_json(UserView, "show.json", user: User.find(id))["data"]
+             } == render_json(UserView, "show.json", record: User.get(id))["data"]
     end
 
     test "renders errors when data is invalid", %{conn: conn, current_user: user} do
@@ -163,15 +162,13 @@ defmodule Web.UserControllerTest do
       conn = delete(conn, Routes.user_path(conn, :delete, user))
       assert response(conn, 204)
 
-      assert_error_sent 404, fn ->
-        get(conn, Routes.user_path(conn, :show, user))
-      end
+      conn = get(conn, Routes.user_path(conn, :show, user))
+      assert json_response(conn, 404)
     end
 
     test "returns 404 when id is invalid", %{conn: conn} do
-      assert_error_sent 404, fn ->
-        delete(conn, Routes.user_path(conn, :delete, -1))
-      end
+      conn = delete(conn, Routes.user_path(conn, :delete, -1))
+      assert json_response(conn, 404)
     end
   end
 
@@ -190,7 +187,7 @@ defmodule Web.UserControllerTest do
 
     test "returns current user", %{conn: conn, current_user: current_user} do
       conn = get(conn, Routes.user_path(conn, :me))
-      assert json_response(conn, 200) == render_json(UserView, "show.json", user: current_user)
+      assert json_response(conn, 200) == render_json(UserView, "show.json", record: current_user)
     end
   end
 end

@@ -11,7 +11,7 @@ defmodule Web.SessionControllerTest do
 
       token = response["data"]["jwt"]
       {:ok, claims} = Web.Guardian.decode_and_verify(token)
-      assert User.find(user.id).auth_tokens == [claims["sub"]]
+      assert User.get(user.id).auth_tokens == [claims["sub"]]
     end
 
     test "return 401 when password is invalid", %{conn: conn} do

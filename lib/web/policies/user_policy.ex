@@ -1,23 +1,23 @@
 defmodule Web.UserPolicy do
   import Web.ApplicationPolicy
 
-  def index(user, _) do
+  def index(user, _, _) do
     is_admin(user)
   end
 
-  def show(_user, _) do
+  def show(_user, _, _) do
     true
   end
 
-  def create(user, _) do
+  def create(user, _, _) do
     is_admin(user)
   end
 
-  def update(user, object) do
+  def update(user, object, _) do
     is_admin(user) || user.id == object.id
   end
 
-  def delete(user, _object) do
+  def delete(user, _record, _) do
     is_admin(user)
   end
 

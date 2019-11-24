@@ -47,7 +47,7 @@ defmodule App.Invoice do
 
   def validate_owner_cif(changeset) do
     invoice = changeset.changes
-    owner = if Map.has_key?(invoice, :owner_id), do: App.User.find(invoice.owner_id), else: nil
+    owner = if Map.has_key?(invoice, :owner_id), do: App.User.get(invoice.owner_id), else: nil
 
     cond do
       !owner ->
@@ -59,5 +59,13 @@ defmodule App.Invoice do
       true ->
         changeset
     end
+  end
+
+  def filter_by(:number, value) do
+    dynamic([x], x.number == ^value)
+  end
+
+  def filter_by(:owner_id, value) do
+    dynamic([x], x.owner_id == ^value)
   end
 end

@@ -3,9 +3,9 @@ defmodule Web.Controller.BaseHelper do
     policy = Keyword.get(opts, :policy)
     action = conn.private.phoenix_action
     current_user = conn.assigns.current_user
-    resource = conn.assigns[:resource]
+    record = conn.assigns[:record]
 
-    if apply(policy, action, [current_user, resource]) do
+    if apply(policy, action, [current_user, record, conn.params]) do
       conn
     else
       conn |> Web.FallbackController.call({:error, :unauthorized}) |> Plug.Conn.halt
@@ -26,13 +26,12 @@ defmodule Web.Controller.BaseHelper do
     Map.merge(conn, %{"body_params" => %{"data" => params}})
   end
 
-  def load_resource(conn, opts) do
-    model = Keyword.get(opts, :model)
+  def load_record(conn, model: model) do
     id = conn.params["id"]
 
-    case model.find(id) do
-      nil -> conn |> Web.FallbackController.call({:error, :not_found}) |> Plug.Conn.halt
-      resource -> Plug.Conn.assign(conn, :resource, resource)
+    case model.get(id) do
+      nil -> Web.FallbackController.call(conn, {:error, :not_found}) |> Plug.Conn.halt
+      record -> Plug.Conn.assign(conn, :record, record)
     end
   end
 end

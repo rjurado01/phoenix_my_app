@@ -3,7 +3,7 @@ defmodule App.InvoiceFactory do
     quote do
       def invoice_factory(attrs) do
         owner = if Map.has_key?(attrs, :owner_id) do
-          Map.get(attrs, :owner_id) |> App.User.find
+          Map.get(attrs, :owner_id) |> App.User.get
         else
           insert(:user)
         end

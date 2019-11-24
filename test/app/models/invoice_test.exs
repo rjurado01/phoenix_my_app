@@ -52,7 +52,7 @@ defmodule App.InvoiceTest do
   end
 
   test "create/1 data creates an invoice with valid" do
-    attrs = build_attrs(Invoice, :invoice)
+    attrs = build_attrs(:invoice)
     assert {:ok, %Invoice{} = record} = Invoice.create(attrs)
   end
 end

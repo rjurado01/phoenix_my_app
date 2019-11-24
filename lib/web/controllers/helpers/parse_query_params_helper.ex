@@ -21,9 +21,9 @@ defmodule Web.Controller.ParseQueryParamsHelper do
     fields = String.split(order_info, ",")
 
     Enum.reduce(fields, %{}, fn x, acc ->
-      matches = Regex.run(~r/(\w+)(-?)/, x)
-      field = Enum.at(matches, 1)
-      dir = if Enum.at(matches, 2) == "-", do: :desc, else: :asc
+      matches = Regex.run(~r/(-?)(\w+)/, x)
+      field = Enum.at(matches, 2)
+      dir = if Enum.at(matches, 1) == "-", do: :desc, else: :asc
 
       Map.put(acc, String.to_atom(field), dir)
     end)

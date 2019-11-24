@@ -15,7 +15,7 @@ defmodule App.ModelTest do
 
   test "find/1 returns the record with given id" do
     user = insert(:user)
-    assert User.find(user.id) == %User{user | password: nil}
+    assert User.get(user.id) == %User{user | password: nil}
   end
 
   test "create/1 with valid data creates a record" do
@@ -39,13 +39,13 @@ defmodule App.ModelTest do
   test "update/2 with invalid data returns error changeset" do
     user = insert(:user)
     assert {:error, %Ecto.Changeset{}} = User.update(user, @invalid_attrs)
-    assert %User{user | password: nil} == User.find(user.id)
+    assert %User{user | password: nil} == User.get(user.id)
     assert Bcrypt.verify_pass("12345678", user.password_hash)
   end
 
   test "delete/1 deletes the record" do
     user = insert(:user)
     assert {:ok, %User{}} = User.delete(user)
-    assert_raise Ecto.NoResultsError, fn -> User.find(user.id) end
+    assert User.get(user.id) == nil
   end
 end

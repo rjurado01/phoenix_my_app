@@ -20,7 +20,7 @@ defmodule App.AuthServiceTest do
       user = insert(:user)
       assert {:ok, token} = Auth.generate_auth_token(user)
 
-      user = App.User.find(user.id)
+      user = App.User.get(user.id)
       assert length(user.auth_tokens) == 1
       assert user.auth_tokens |> List.first == token
     end
@@ -30,18 +30,18 @@ defmodule App.AuthServiceTest do
       assert {:ok, first_token} = Auth.generate_auth_token(user)
 
       for _x <- 1..4 do
-        user = App.User.find(user.id)
+        user = App.User.get(user.id)
         Auth.generate_auth_token(user)
       end
 
       # has generated until 5 tokens
-      user = App.User.find(user.id)
+      user = App.User.get(user.id)
       assert length(user.auth_tokens) == 5
       assert user.auth_tokens |> List.first == first_token
 
       # remove first token
       Auth.generate_auth_token(user)
-      user = App.User.find(user.id)
+      user = App.User.get(user.id)
       assert length(user.auth_tokens) == 5
       assert user.auth_tokens |> List.first != first_token
     end
@@ -60,10 +60,10 @@ defmodule App.AuthServiceTest do
       user = insert(:user)
       assert {:ok, token} = Auth.generate_auth_token(user)
 
-      user = App.User.find(user.id)
+      user = App.User.get(user.id)
       Auth.remove_session(user, token)
 
-      user = App.User.find(user.id)
+      user = App.User.get(user.id)
       assert length(user.auth_tokens) == 0
     end
   end

@@ -17,13 +17,12 @@ defmodule Web.ConnCase do
 
   using do
     quote do
-      # Import conveniences for testing with connections
-      use Phoenix.ConnTest
-
       alias Web.Router.Helpers, as: Routes
 
-      import App.Factory
       import Web.ConnCaseHelper
+
+      use Phoenix.ConnTest
+      use App.GlobalTestHelpers
 
       # The default endpoint for testing
       @endpoint Web.Endpoint

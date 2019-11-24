@@ -22,6 +22,7 @@ defmodule Web.Router do
     pipe_through [:api, :jwt_authenticated]
 
     resources "/users", UserController, only: [:index, :show, :create, :update, :delete]
+    resources "/invoices", InvoiceController, only: [:index, :show, :create, :update, :delete]
 
     get "/me", UserController, :me
 

@@ -1,10 +1,17 @@
 defmodule App.GlobalTestHelpers do
   defmacro __using__(_opts) do
     quote do
+      import App.Factory
+      import ShorterMaps
       import App.GlobalTestHelpers
 
-      def build_attrs(model, factory) do
-        Map.take(build(factory), model.__schema__(:fields))
+      def build_attrs(factory, attrs) do
+        factory_struct = build(factory, attrs)
+        Map.take(factory_struct, factory_struct.__struct__.__schema__(:fields))
+      end
+
+      def build_attrs(factory) do
+        build_attrs(factory, %{})
       end
     end
   end

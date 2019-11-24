@@ -17,10 +17,6 @@ defmodule App.Repo do
     query |> aggregate(:count, :id)
   end
 
-  def find(query, id) do
-    query |> get!(id)
-  end
-
   def order(query, params) do
     query |> order_by(^params)
   end
@@ -31,7 +27,7 @@ defmodule App.Repo do
         field_name = if is_atom(field), do: field, else: String.to_atom(field)
         where(acc, [x], ^module.filter_by(field_name, value))
       rescue
-        ArgumentError -> acc
+        FunctionClauseError -> acc
       end
     end)
   end

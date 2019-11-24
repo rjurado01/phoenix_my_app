@@ -14,6 +14,11 @@ defmodule Web.ConnCaseHelper do
     set_auth_header(%{conn: conn, current_user: user})
   end
 
+  def sign_in_manager(%{conn: conn}) do
+    user = App.Factory.insert(:user_manager)
+    set_auth_header(%{conn: conn, current_user: user})
+  end
+
   def sign_in_admin(%{conn: conn}) do
     user = App.Factory.insert(:user_admin)
     set_auth_header(%{conn: conn, current_user: user})

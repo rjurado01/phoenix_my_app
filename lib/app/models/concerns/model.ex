@@ -29,8 +29,12 @@ defmodule App.Model do
         __MODULE__ |> Repo.count
       end
 
-      def find(id) do
-        __MODULE__ |> Repo.find(id)
+      def get(id) do
+        try do
+          __MODULE__ |> Repo.get(id)
+        rescue
+          Ecto.Query.CastError -> nil
+        end
       end
 
       def create(attrs \\ %{}) do

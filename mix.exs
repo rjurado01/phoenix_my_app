@@ -48,7 +48,8 @@ defmodule MyApp.MixProject do
       {:poison, "~> 3.1"},
       {:arc_ecto, "~> 0.11.1"},
       {:bamboo, "~> 1.3.0"},
-      {:bamboo_smtp, "~> 2.0.0"}
+      {:bamboo_smtp, "~> 2.0.0"},
+      {:shorter_maps, "~> 2.0"}
     ]
   end
 
