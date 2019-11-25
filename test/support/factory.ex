@@ -5,7 +5,7 @@ defmodule App.Factory do
     changeset = module.changeset(attrs)
 
     if changeset.valid? do
-      struct(module, changeset.changes)
+      struct(module, attrs)
     else
       throw(changeset)
     end

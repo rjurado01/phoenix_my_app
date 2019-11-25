@@ -22,6 +22,29 @@ defmodule App.InvoiceTest do
       ]
     end
 
+    test "aux" do
+      user = insert(:user)
+
+      params = %{
+        owner_id: user.id,
+        type: "emitted",
+        number: 1,
+        expedition_date: ~D[2020-01-01],
+        emitter_legal_id: "81168812H",
+        receiver_legal_id: "77429891T",
+        concepts: [
+          %{
+            description: "Concept 1",
+            quantity: 2
+          }
+        ]
+      }
+
+      IO.inspect params
+      changeset = Invoice.changeset(%Invoice{}, params)
+      IO.inspect changeset
+    end
+
     test "validates receiver_legal_id when type is receiver" do
       owner = insert(:user)
       changeset = Invoice.changeset(%Invoice{}, %{

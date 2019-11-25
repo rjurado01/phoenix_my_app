@@ -7,7 +7,10 @@ defmodule App.GlobalTestHelpers do
 
       def build_attrs(factory, attrs) do
         factory_struct = build(factory, attrs)
-        Map.take(factory_struct, factory_struct.__struct__.__schema__(:fields))
+        fields = factory_struct.__struct__.__schema__(:fields)
+        associations = factory_struct.__struct__.__schema__(:associations)
+
+        Map.take(factory_struct, fields ++ associations)
       end
 
       def build_attrs(factory) do

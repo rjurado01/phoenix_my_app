@@ -120,11 +120,11 @@ defmodule Web.InvoiceControllerTest do
 
     test "renders invoice when data is valid", ~M{conn, current_user} do
       id = insert(:invoice, owner_id: current_user.id).id
-      conn = put(conn, Routes.invoice_path(conn, :update, id), data: %{total: 91})
+      conn = put(conn, Routes.invoice_path(conn, :update, id), data: %{number: 91})
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
       invoice = Invoice.get(id)
-      assert invoice.total == 91
+      assert invoice.number == 91
     end
 
     test "renders errors when data is invalid", ~M{conn, current_user} do

@@ -6,8 +6,6 @@ defmodule App.Invoice do
     expedition_date
     emitter_legal_id
     receiver_legal_id
-    concept
-    total
     type
     owner_id]a
 
@@ -16,30 +14,32 @@ defmodule App.Invoice do
     expedition_date
     emitter_legal_id
     receiver_legal_id
-    concept
-    total
     type
     owner_id]a
 
   schema "invoices" do
-    field :concept, :string
     field :expedition_date, :date
     field :number, :integer
     field :receiver_legal_id, :string
     field :emitter_legal_id, :string
-    field :total, :float
     field :type, :string
 
     belongs_to :owner, App.User
+
+    has_many :concepts, App.Concept
 
     timestamps()
   end
 
   @doc false
   def changeset(invoice, attrs) do
+    invoice = App.Repo.preload(invoice, :concepts)
+
     invoice
     |> cast(attrs, @cast_fields)
     |> validate_required(@required_fields)
+    |> cast_assoc(:concepts, required: true)
+    |> validate_required(:concepts)
     |> validate_inclusion(:type, ["emitted", "received"])
     |> validate_owner_cif
     |> assoc_constraint(:owner)
