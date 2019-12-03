@@ -34,4 +34,14 @@ defmodule Web.Controller.BaseHelper do
       record -> Plug.Conn.assign(conn, :record, record)
     end
   end
+
+  def preload_on_record(conn, associations) do
+    record = conn.assigns.record
+
+    if record && is_list(associations) && Enum.any?(associations) do
+      Plug.Conn.assign(conn, :record, App.Repo.preload(record, associations))
+    else
+      conn
+    end
+  end
 end

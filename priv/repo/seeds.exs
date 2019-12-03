@@ -13,26 +13,36 @@ App.User.create(%{
   email: "admin@email.com",
   password: "12345678",
   is_active: true,
-  is_admin: true
+  role: "admin"
 })
 
 App.User.create(%{
-  email: "user1@email.com",
+  email: "manager@email.com",
   password: "12345678",
   is_active: true,
-  is_admin: false
+  role: "manager"
 })
 
-App.User.create(%{
-  email: "user2@email.com",
+user = App.User.create(%{
+  email: "user@email.com",
   password: "12345678",
   is_active: true,
-  is_admin: false
+  legal_id: "81168812H",
+  role: "client"
 })
 
-App.User.create(%{
-  email: "user3@email.com",
-  password: "12345678",
-  is_active: false,
-  is_admin: false
+App.Invoice.create(%{
+  owner_id: user.id,
+  type: "emitted",
+  number: 1,
+  expedition_date: ~D[2020-01-01],
+  emitter_legal_id: "81168812H",
+  receiver_legal_id: "77429891T",
+  concepts: [
+    %{
+      description: "Concept 1",
+      quantity: 2,
+      price: 25.5
+    }
+  ]
 })

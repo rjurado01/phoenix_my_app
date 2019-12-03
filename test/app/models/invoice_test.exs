@@ -8,7 +8,7 @@ defmodule App.InvoiceTest do
     expedition_date
     emitter_legal_id
     receiver_legal_id
-    concept
+    concepts
     total
     type
     owner_id]a
