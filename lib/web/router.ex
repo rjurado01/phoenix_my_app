@@ -16,6 +16,7 @@ defmodule Web.Router do
     pipe_through :api
 
     post "/session", SessionController, :create
+    get "/status", StatusController, :show
   end
 
   scope "/api", Web do
