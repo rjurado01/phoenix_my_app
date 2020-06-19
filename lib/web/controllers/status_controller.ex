@@ -2,8 +2,6 @@ defmodule Web.StatusController do
   use Web, :controller
 
   def show(conn, _params, _assigns) do
-    conn
-    |> put_status(204)
-    |> json("")
+    send_resp(conn, :no_content, "")
   end
 end
